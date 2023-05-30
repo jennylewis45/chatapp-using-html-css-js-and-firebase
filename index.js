@@ -114,11 +114,12 @@ function getUser() {
 //   };
 
 
-  var messagesRef = firebase.database().ref('messages');
+ //var messagesRef = firebase.database().ref('messages');
+
+function sendMessage(){
+    
 
 
-
-  function sendMessage() {
     console.log("hello")
      var messageInput = document.getElementById('message-input');
     var message = messageInput.value;
@@ -137,6 +138,7 @@ function getUser() {
         console.error("Error sending message:", error);
       });
   }
+
 
 
 
@@ -192,9 +194,9 @@ messagesRef.on('value', function (snapshot) {
 });
 
 
-var firebaseConfig = {
-};
-firebase.initializeApp(firebaseConfig);
+// var firebaseConfig = {
+// };
+// firebase.initializeApp(firebaseConfig);
 
 var messagesRef = firebase.database().ref('messages');
 
