@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat App</title>
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+     <!-- Add other Firebase SDKs you may be using (e.g., firestore, storage)  -->
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+
+     <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-firestore.js"></script>
+
+    <script>
+      var firebaseConfig = {
+        apiKey: "AIzaSyDqbiCOGZTaXp8mk_-FkPTgumMtPy4G2UY",
+        authDomain: "chat-app-ff369.firebaseapp.com",
+        projectId: "chat-app-ff369",
+        storageBucket: "chat-app-ff369.appspot.com",
+        messagingSenderId: "106226641869",
+        appId: "1:106226641869:web:95a33ffa8b6fb709ddf284",
+      };
+      firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="justify-between p:2 sm:p-6 h-screen flex flex-col flex-1">
+      <div
+        class="border-b-2 px-5 sm:px-0 sm:items-center flex py-2.5 justify-between border-slate-200"
+      >
+        <!-- top-bar -->
+        <div class="flex items-center justify-between gap-x-4 relative w-full">
+          <div class="relative">
+            <span class="absolute text-green-400 right-0 -bottom-2">
+              <svg class="w-4 h-6">
+                <circle cx="8" cy="8" r="8" fill="currentColor"></circle>
+              </svg>
+            </span>
+            <img
+              class="max-w-[50px] rounded-full"
+              src="images/avatar.jpg"
+            />
+          </div>
+          <div class="flex justify-between w-full">
+            <div class="text-2xl mt-1 flex items-center">
+              <!-- This name will be dynamic, you will display the user who is logged in using localStorage -->
+              <span id="username" class="text-gray-700 mr-3"></span>
+            </div>
+            <div onclick="logOut()" class="flex items-center gap-2 cursor-pointer">
+              Logout
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-6 h-6 text-red-500 scale-[-1]"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- thread-messages -->
+      <div id="messages" class="flex-col flex gap-y-3 p-3 overflow-y-auto">
+        <!-- message -->
+        <div class="my-message">
+          <div class="flex items-end">
+            <div
+              class="max-w-[320px] flex flex-col space-y-2 text-sm mx-2 order-2 items-start"
+            >
+              <div>
+                <span
+                  class="px-4 py-2 rounded-lg inline-block rounded-bl-none bg-slate-200 text-gray-500"
+                  >Lorem ipsum dolor</span
+                >
+              </div>
+            </div>
+            <img    
+            src="images/avatar.jpg"          
+            class="w-6 h-6 rounded-full order-1"
+            />
+          </div>
+        </div>
+        <!-- message -->
+        <div class="my-message">
+          <div class="flex items-end justify-end">
+            <div
+              class="max-w-[320px] flex flex-col gap-y-2 text-sm mx-2 order-1 items-end"
+            >
+              <div>
+                <span
+                  class="px-4 py-2 rounded-lg inline-block rounded-br-none bg-sky-500 text-white"
+                  >Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam
+                  qui ipsum, magni rerum necessitatibus error ipsa laborum alias
+                  vitae? Optio voluptates provident officia odit quae vel illo
+                  in aperiam commodi. Quisquam, consectetur. Distinctio suscipit
+                  iusto sed illum. Fuga rerum eos ipsum, voluptas quisquam et
+                  sed illo necessitatibus soluta impedit quia sapiente
+                  reprehenderit vel aliquam labore. Illum sequi natus corrupti.
+                  Cumque! Culpa alias odit sint it</span
+                >
+              </div>
+            </div>
+            <img
+              src="images/avatar.jpg"
+              class="w-6 h-6 rounded-full order-2"
+            />
+          </div>
+        </div>
+      </div>
+    <div class="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
+        <form id="post-message" class="relative flex">
+          <input
+            type="text"
+            id="message-input"
+            class="w-full focus:outline-none focus:placeholder-slate-400 text-gray-600 placeholder-gray-600 pl-5 bg-slate-200 rounded-md rounded-r-2xl py-3"
+            placeholder="Type a message"
+          />
+          <div class="absolute right-0 items-center inset-y-0 flex">
+            <button onclick="sendMessage()"
+              id="send-message"
+              type="button"
+              class="inline-flex items-center hover:animate-pulse hover:scale-[1.03] transition-all justify-center rounded-r-2xl px-3.5 py-2.5 sm:px-4 sm:py-3 text-white bg-sky-400"
+            >
+              <span class="font-semibold">Send</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-5 h-5 ml-2"
+              >
+                <path
+                  d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"
+                />
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+
+    <script src="index.js"></script>
+    <script src="messages.js"></script>
+
+  </body>
+
+  <!-- <script>
+    getUser()
+
+    const sendMessage = document.getElementById("send-message");
+
+    sendMessage.addEventListener("click", (e) => {
+      e.preventDefault();
+    });
+
+
+  </script> -->
+</html>     
